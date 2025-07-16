@@ -11,40 +11,31 @@ pub fn main() !void {
 
     // const example_path = "./inputs/day1/example_input.txt";
     const path = "./inputs/day1/input.txt";
-    std.log.info("Opening {s}.\n", .{path});
-
     const data = try readInput(path);
-    if (data == null) {
-        std.log.info("no data read", .{});
-        return;
-    }
 
-    try partOne(data.?);
-    try partTwo(data.?);
+    try partOne(data);
+    try partTwo(data);
 }
 
 // partOne calculates the sum of differences between the smallest values in each list.
 fn partOne(data: [][2]u32) !void {
-    var firstArr = std.ArrayList(u32).init(alloc.?);
-    var secondArr = std.ArrayList(u32).init(alloc.?);
+    var first = std.ArrayList(u32).init(alloc.?);
+    var second = std.ArrayList(u32).init(alloc.?);
 
     for (data) |elements| {
-        try firstArr.append(elements[0]);
-        try secondArr.append(elements[1]);
+        try first.append(elements[0]);
+        try second.append(elements[1]);
     }
 
-    const first = try firstArr.toOwnedSlice();
-    const second = try secondArr.toOwnedSlice();
-
-    std.mem.sort(u32, first, {}, std.sort.asc(u32));
-    std.mem.sort(u32, second, {}, std.sort.asc(u32));
+    std.mem.sort(u32, first.items, {}, std.sort.asc(u32));
+    std.mem.sort(u32, second.items, {}, std.sort.asc(u32));
 
     var sum: u32 = 0;
-    for (0..first.len) |i| {
-        if (first[i] > second[i]) {
-            sum += first[i] - second[i];
+    for (0..first.items.len) |i| {
+        if (first.items[i] > second.items[i]) {
+            sum += first.items[i] - second.items[i];
         } else {
-            sum += second[i] - first[i];
+            sum += second.items[i] - first.items[i];
         }
     }
 
@@ -56,32 +47,29 @@ fn partOne(data: [][2]u32) !void {
 fn partTwo(data: [][2]u32) !void {
     var score: u32 = 0;
 
-    var firstArr = std.ArrayList(u32).init(alloc.?);
-    var secondArr = std.ArrayList(u32).init(alloc.?);
+    var first = std.ArrayList(u32).init(alloc.?);
+    var second = std.ArrayList(u32).init(alloc.?);
 
     for (data) |elements| {
-        try firstArr.append(elements[0]);
-        try secondArr.append(elements[1]);
+        try first.append(elements[0]);
+        try second.append(elements[1]);
     }
 
-    const first = try firstArr.toOwnedSlice();
-    const second = try secondArr.toOwnedSlice();
-
-    std.mem.sort(u32, first, {}, std.sort.asc(u32));
-    std.mem.sort(u32, second, {}, std.sort.asc(u32));
+    std.mem.sort(u32, first.items, {}, std.sort.asc(u32));
+    std.mem.sort(u32, second.items, {}, std.sort.asc(u32));
 
     var secondi: usize = 0;
-    for (first) |val| {
-        if (secondi >= second.len) {
+    for (first.items) |val| {
+        if (secondi >= second.items.len) {
             break;
         }
 
-        while (second[secondi] < val and secondi < second.len - 1) {
+        while (second.items[secondi] < val and secondi < second.items.len - 1) {
             secondi += 1;
         }
 
         var factor: u32 = 0;
-        while (second[secondi] == val and secondi < second.len) {
+        while (second.items[secondi] == val and secondi < second.items.len) {
             factor += 1;
             secondi += 1;
         }
@@ -93,7 +81,7 @@ fn partTwo(data: [][2]u32) !void {
 }
 
 // readInput reads the path and parses it into an array that needs to be freed by the caller.
-fn readInput(path: []const u8) !?[][2]u32 {
+fn readInput(path: []const u8) ![][2]u32 {
     const file = try std.fs.cwd().openFile(path, .{});
     defer file.close();
 
