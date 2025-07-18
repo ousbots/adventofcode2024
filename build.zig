@@ -9,7 +9,7 @@ comptime {
     }
 }
 
-const current_day = "src/day3.zig";
+const current_day = "src/day4.zig";
 
 // The build graph.
 pub fn build(b: *std.Build) void {
